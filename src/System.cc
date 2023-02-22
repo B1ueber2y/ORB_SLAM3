@@ -759,14 +759,14 @@ void System::SaveTrajectoryEuRoC(const string &filename)
             Sophus::SE3f Twb = (pKF->mImuCalib.mTbc * (*lit) * Trw).inverse();
             Eigen::Quaternionf q = Twb.unit_quaternion();
             Eigen::Vector3f twb = Twb.translation();
-            f << setprecision(6) << 1e9*(*lT) << " " <<  setprecision(9) << twb(0) << " " << twb(1) << " " << twb(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+            f << setprecision(6) << (*lT) << " " <<  setprecision(9) << twb(0) << " " << twb(1) << " " << twb(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
         }
         else
         {
             Sophus::SE3f Twc = ((*lit)*Trw).inverse();
             Eigen::Quaternionf q = Twc.unit_quaternion();
             Eigen::Vector3f twc = Twc.translation();
-            f << setprecision(6) << 1e9*(*lT) << " " <<  setprecision(9) << twc(0) << " " << twc(1) << " " << twc(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+            f << setprecision(6) << (*lT) << " " <<  setprecision(9) << twc(0) << " " << twc(1) << " " << twc(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
         }
 
         // cout << "5" << endl;
@@ -864,14 +864,14 @@ void System::SaveTrajectoryEuRoC(const string &filename, Map* pMap)
             Sophus::SE3f Twb = (pKF->mImuCalib.mTbc * (*lit) * Trw).inverse();
             Eigen::Quaternionf q = Twb.unit_quaternion();
             Eigen::Vector3f twb = Twb.translation();
-            f << setprecision(6) << 1e9*(*lT) << " " <<  setprecision(9) << twb(0) << " " << twb(1) << " " << twb(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+            f << setprecision(6) << (*lT) << " " <<  setprecision(9) << twb(0) << " " << twb(1) << " " << twb(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
         }
         else
         {
             Sophus::SE3f Twc = ((*lit)*Trw).inverse();
             Eigen::Quaternionf q = Twc.unit_quaternion();
             Eigen::Vector3f twc = Twc.translation();
-            f << setprecision(6) << 1e9*(*lT) << " " <<  setprecision(9) << twc(0) << " " << twc(1) << " " << twc(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+            f << setprecision(6) << (*lT) << " " <<  setprecision(9) << twc(0) << " " << twc(1) << " " << twc(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
         }
 
         // cout << "5" << endl;
@@ -982,7 +982,7 @@ void System::SaveTrajectoryEuRoC(const string &filename, Map* pMap)
 
             Eigen::Vector3f twb = Twb.translation();
             Eigen::Quaternionf q = Twb.unit_quaternion();
-            f << setprecision(6) << 1e9*(*lT) << " " <<  setprecision(9) << twb(0) << " " << twb(1) << " " << twb(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+            f << setprecision(6) << (*lT) << " " <<  setprecision(9) << twb(0) << " " << twb(1) << " " << twb(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
         }
         else
         {
@@ -991,7 +991,7 @@ void System::SaveTrajectoryEuRoC(const string &filename, Map* pMap)
 
             Eigen::Vector3f twc = Twc.translation();
             Eigen::Quaternionf q = Twc.unit_quaternion();
-            f << setprecision(6) << 1e9*(*lT) << " " <<  setprecision(9) << twc(0) << " " << twc(1) << " " << twc(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+            f << setprecision(6) << (*lT) << " " <<  setprecision(9) << twc(0) << " " << twc(1) << " " << twc(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
         }
 
         // cout << "5" << endl;
@@ -1040,7 +1040,7 @@ void System::SaveTrajectoryEuRoC(const string &filename, Map* pMap)
             cv::Mat R = pKF->GetImuRotation().t();
             vector<float> q = Converter::toQuaternion(R);
             cv::Mat twb = pKF->GetImuPosition();
-            f << setprecision(6) << 1e9*pKF->mTimeStamp  << " " <<  setprecision(9) << twb.at<float>(0) << " " << twb.at<float>(1) << " " << twb.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+            f << setprecision(6) << pKF->mTimeStamp  << " " <<  setprecision(9) << twb.at<float>(0) << " " << twb.at<float>(1) << " " << twb.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
 
         }
         else
@@ -1048,7 +1048,7 @@ void System::SaveTrajectoryEuRoC(const string &filename, Map* pMap)
             cv::Mat R = pKF->GetRotation();
             vector<float> q = Converter::toQuaternion(R);
             cv::Mat t = pKF->GetCameraCenter();
-            f << setprecision(6) << 1e9*pKF->mTimeStamp << " " <<  setprecision(9) << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+            f << setprecision(6) << pKF->mTimeStamp << " " <<  setprecision(9) << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
         }
     }
     f.close();
@@ -1098,7 +1098,7 @@ void System::SaveKeyFrameTrajectoryEuRoC(const string &filename)
             Sophus::SE3f Twb = pKF->GetImuPose();
             Eigen::Quaternionf q = Twb.unit_quaternion();
             Eigen::Vector3f twb = Twb.translation();
-            f << setprecision(6) << 1e9*pKF->mTimeStamp  << " " <<  setprecision(9) << twb(0) << " " << twb(1) << " " << twb(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+            f << setprecision(6) << pKF->mTimeStamp  << " " <<  setprecision(9) << twb(0) << " " << twb(1) << " " << twb(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
 
         }
         else
@@ -1106,7 +1106,7 @@ void System::SaveKeyFrameTrajectoryEuRoC(const string &filename)
             Sophus::SE3f Twc = pKF->GetPoseInverse();
             Eigen::Quaternionf q = Twc.unit_quaternion();
             Eigen::Vector3f t = Twc.translation();
-            f << setprecision(6) << 1e9*pKF->mTimeStamp << " " <<  setprecision(9) << t(0) << " " << t(1) << " " << t(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+            f << setprecision(6) << pKF->mTimeStamp << " " <<  setprecision(9) << t(0) << " " << t(1) << " " << t(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
         }
     }
     f.close();
@@ -1136,7 +1136,7 @@ void System::SaveKeyFrameTrajectoryEuRoC(const string &filename, Map* pMap)
             Sophus::SE3f Twb = pKF->GetImuPose();
             Eigen::Quaternionf q = Twb.unit_quaternion();
             Eigen::Vector3f twb = Twb.translation();
-            f << setprecision(6) << 1e9*pKF->mTimeStamp  << " " <<  setprecision(9) << twb(0) << " " << twb(1) << " " << twb(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+            f << setprecision(6) << pKF->mTimeStamp  << " " <<  setprecision(9) << twb(0) << " " << twb(1) << " " << twb(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
 
         }
         else
@@ -1144,7 +1144,7 @@ void System::SaveKeyFrameTrajectoryEuRoC(const string &filename, Map* pMap)
             Sophus::SE3f Twc = pKF->GetPoseInverse();
             Eigen::Quaternionf q = Twc.unit_quaternion();
             Eigen::Vector3f t = Twc.translation();
-            f << setprecision(6) << 1e9*pKF->mTimeStamp << " " <<  setprecision(9) << t(0) << " " << t(1) << " " << t(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+            f << setprecision(6) << pKF->mTimeStamp << " " <<  setprecision(9) << t(0) << " " << t(1) << " " << t(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
         }
     }
     f.close();

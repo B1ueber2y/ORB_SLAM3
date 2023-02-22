@@ -33,11 +33,11 @@ Camera1.p2: 0.0
 Camera.width: 1959
 Camera.height: 1085
 
-Camera.newWidth: 600
-Camera.newHeight: 350
+Camera.newWidth: 722
+Camera.newHeight: 400
 
 # Camera frames per second 
-Camera.fps: 10
+Camera.fps: 1
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1

@@ -77,8 +77,8 @@ int main(int argc, char **argv)
     cout.precision(17);
 
 
-    int fps = 20;
-    float dT = 1.f/fps;
+    // int fps = 1;
+    // float dT = 1.f/fps;
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, false);
     float imageScale = SLAM.GetImageScale();
@@ -92,6 +92,14 @@ int main(int argc, char **argv)
         // Main loop
         cv::Mat im;
         int proccIm = 0;
+        
+        vector<vector<ORB_SLAM3::MapPoint*> > mapPointsPerFrame;
+        vector<vector<cv::KeyPoint> > keyPointsUnPerFrame;
+        vector<Sophus::SE3f> posesPerFrame;
+        mapPointsPerFrame.reserve(nImages[seq]);
+        keyPointsUnPerFrame.reserve(nImages[seq]);
+        posesPerFrame.reserve(nImages[seq]);
+
         for(int ni=0; ni<nImages[seq]; ni++, proccIm++)
         {
 
@@ -137,7 +145,12 @@ int main(int argc, char **argv)
 
             // Pass the image to the SLAM system
             // cout << "tframe = " << tframe << endl;
-            SLAM.TrackMonocular(im,tframe); // TODO change to monocular_inertial
+            auto pose = SLAM.TrackMonocular(im,tframe); // TODO change to monocular_inertial
+
+            mapPointsPerFrame.push_back(SLAM.GetTrackedMapPoints());
+            keyPointsUnPerFrame.push_back(SLAM.GetTrackedKeyPointsUn());
+            posesPerFrame.push_back(pose);
+
 
     #ifdef COMPILEDWITHC11
             std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -164,6 +177,7 @@ int main(int argc, char **argv)
             //std::cout << "T: " << T << std::endl;
             //std::cout << "ttrack: " << ttrack << std::endl;
 
+            T *= 1e-9;
             if(ttrack<T) {
                 //std::cout << "usleep: " << (dT-ttrack) << std::endl;
                 usleep((T-ttrack)*1e6); // 1e6
@@ -181,6 +195,42 @@ int main(int argc, char **argv)
 
             SLAM.ChangeDataset();
         }
+
+        // Assume only 1 seq for now
+        ofstream points3d_f, images_f;
+        images_f.open("images_tmp.txt");
+        for (int fid = 0; fid < nImages[seq]; fid++) {
+            // Pose might not correct here
+            auto pose = posesPerFrame[fid].params();
+            images_f << pose[3] << ' ' << pose[0] << ' ' << pose[1] << ' ' << pose[2] << ' ' << pose[4] << ' ' << pose[5] << ' ' << pose[6] << " 0 " << vstrImageFilenames[seq][fid];
+
+            for (int pid = 0; pid < mapPointsPerFrame[fid].size(); pid++) {
+                ORB_SLAM3::MapPoint* p3d = mapPointsPerFrame[fid][pid];
+                cv::Point2f p2d = keyPointsUnPerFrame[fid][pid].pt;
+                long mnId = (p3d == nullptr) ? -1 : p3d->mnId;
+                if (mnId >= 0 && p2d.x >= 0 && p2d.x < 752 && p2d.y >= 0 && p2d.y < 480) {
+                    images_f << ' ' << p2d.x << ' ' << p2d.y << ' ' << mnId;
+                }
+            }
+            images_f << endl;
+        }
+        images_f.close();
+
+        points3d_f.open("points3D_tmp.txt");
+        map<long unsigned, ORB_SLAM3::MapPoint*> _m;
+        for (int fid = 0; fid < nImages[seq]; fid++) {
+            for (int pid = 0; pid < mapPointsPerFrame[fid].size(); pid++) {
+                ORB_SLAM3::MapPoint* p3d = mapPointsPerFrame[fid][pid];
+                if (p3d == nullptr) continue;
+                if (_m.find(p3d->mnId) == _m.end()) _m[p3d->mnId] = p3d;
+                else assert(_m[p3d->mnId] == p3d);
+            }
+        }
+        for (const auto &x : _m) {
+            auto pos = x.second->GetWorldPos();
+            points3d_f << x.first << ' ' << pos.x() << ' ' << pos.y() << ' ' << pos.z() << endl;
+        }
+        points3d_f.close();
 
     }
     // Stop all threads
@@ -226,8 +276,8 @@ void LoadImages(const string &strImagePath, const string &strPathTimes,
             vstrImages.push_back(strImagePath + "/" + ss.str() + ".jpg");
             double t;
             ss >> t;
-            t *= 1e8;
-            vTimeStamps.push_back(t*1e-9);
+            t *= 1e9;
+            vTimeStamps.push_back(t);
 
         }
     }
